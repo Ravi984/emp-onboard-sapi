@@ -1,0 +1,12 @@
+{
+"employeId": 1,
+"LastName": "Davolio",
+"FirstName": "Nancy",
+"Birthdate": "1968-12-08",
+"Address": "49 Gilbert St.",
+"salary": 4567.34,
+"Age": 35,
+"Phone": "(171) 555-2222",
+"Email": "abc@gmail.com",
+"status":"Active"
+}

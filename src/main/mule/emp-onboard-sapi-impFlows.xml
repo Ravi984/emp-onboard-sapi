@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="GET-emp-onboard-sapi-impFlowsFlow\FETCH" doc:id="b55cabed-2749-453a-b962-ca9497b1f3fb" >
+		<set-variable value="#[attributes.queryParams.empId as Number]" doc:name="Set Variable" doc:id="146495cf-10fc-481e-8471-95071bf001a5" variableName="empId"/>
+		<set-variable value="#[attributes.queryParams.status]" doc:name="Set Variable" doc:id="424a62ba-cb68-4ffe-9373-5a665c30d83f" variableName="status"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6b9dbb12-f148-4dca-a7f7-83581c614645" message="#[{empid:vars.empId,status:vars.status}]"/>
+		<db:select doc:name="Select" doc:id="6809a169-caa2-4630-a5e4-cbe5fa10444d" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from employeedetails where EMPLOYEID=:empid and status=:statu]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+    empid:vars.empId,
+    status:vars.status
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="016856a5-1360-4a27-9f57-f32dde3a8f36" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="POST-ADD-EMP-emp-onboard-sapi-impFlowsFlow" doc:id="8c3c18f6-9684-4a99-bac4-a9460aa4eb66" >
+		<db:insert doc:name="Employee_Insert" doc:id="7d131ad6-0ad4-4304-9df9-074d49f41efb" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into EMPLOYEEDETAILS (employeId,LastName,FirstName,Birthdate,Address,salary,Age,Phone,Email,status) values(:empid,:LName,:FName,:DOB,:Address,:salary,:Age,:Phone,:Email,:status)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	empid: payload.employeId as String,
+	Email: payload.Email,
+	LName: payload.LastName,
+	Address: payload.Address,
+	DOB: now() as LocalDateTime{format: "yyyy-MM-dd'T'hh:mm:ss"},
+	Phone: payload.Phone,
+	salary: payload.salary,
+	FName: payload.FirstName,
+	Age: payload.Age,
+	status: payload.status,
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message ADD Emp Response" doc:id="80421469-b7cb-45be-bbba-6bacd6de799d" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: 200,
+  message: "success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="Patch-UPDATE-EMP-emp-onboard-sapi-impFlowsFlow" doc:id="f2826e9f-d139-4ffc-a38b-c2d829f3f405" >
+		<ee:transform doc:name="Transform Message" doc:id="ad6facd7-6677-4d16-91dc-03533b51ab1a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	empid:payload.empReq.empid,
+	status:payload.empReq.Status,
+	//cuempid:attributes.queryParams.empid	
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="3cfd7e7e-7003-45a0-a4fa-d7a6c0ea75c5" message="#[payload]"/>
+		<db:update doc:name="Update_Emp" doc:id="4372f47f-5aa3-4da5-9627-2d85f2dcfe51" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE employeedetails set status=:status where Employeid = :empid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message DB Response" doc:id="9338fdf3-a3cd-41ee-8e73-de4a7f143029" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="425047dc-ea24-405a-8960-4f9ea6ae4e27" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message Update Emp Response" doc:id="073ac912-a96b-4608-a039-1510befd7651" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  empdetailsResp: {
+    status: "100",
+    message: "success"
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="DELETE-emp-onboard-sapi-impFlowsFlow" doc:id="8e2f81a9-a27d-44f4-bf5f-f60a8b1403f5" >
+		<ee:transform doc:name="set uri param to variableTransform Message" doc:id="ae0d3f47-6f4f-4bc5-8d64-346dd2c3fa04" >
+			<ee:variables >
+				<ee:set-variable variableName="empId" ><![CDATA[attributes.uriParams.'empId']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:delete doc:name="Delete" doc:id="d31d1c56-3823-44c4-b930-59b38840ab6f" config-ref="Database_Config">
+			<db:sql ><![CDATA[DELETE From employeedetails where Employeid=:empid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{empid:vars.empId}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message EMP-DELETE Response" doc:id="79c506d6-9394-4ef4-95b1-2f39da084798" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: 200,
+  message: "success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="EmployeeReq" format="json">
+      <types:shape format="weave" example="examples/Empinput.json"><![CDATA[%dw 2.0
+
+type EmployeeReq = {|
+  employeId: Number {"typeId": "int"}, 
+  LastName: String, 
+  FirstName: String, 
+  Birthdate: String, 
+  Address: String, 
+  salary: Number {"typeId": "double"}, 
+  Age: Number {"typeId": "int"}, 
+  Phone: String, 
+  Email: String, 
+  status: String
+|} {"example": "{\\\"employeId\\\":1,\\\"LastName\\\":\\\"Davolio\\\",\\\"FirstName\\\":\\\"Nancy\\\",\\\"Birthdate\\\":\\\"1968-12-08\\\",\\\"Address\\\":\\\"49 Gilbert St.\\\",\\\"salary\\\":4567.34,\\\"Age\\\":35,\\\"Phone\\\":\\\"(171) 555-2222\\\",\\\"Email\\\":\\\"abc@gmail.com\\\",\\\"status\\\":\\\"Active\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="UpdateReqXML" format="xml">
+      <types:example format="xml" element="empReq" location="examples/EmpxmlReq-1.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#ad6facd7-6677-4d16-91dc-03533b51ab1a">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="UpdateReqXML"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
