@@ -34,8 +34,8 @@
                         <sharedLibrary>
                             <groupId>com.mycompany</groupId>
                             <artifactId>ojdbc8</artifactId>
-                        </sharedLibrary> -->
-                    </sharedLibraries>
+                        </sharedLibrary> 
+                    </sharedLibraries> -->
                 </configuration>
 			</plugin>
 			<plugin>
