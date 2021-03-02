@@ -16,4 +16,5 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="2b1d1a72-a713-416d-8b02-10267eb8591b" >
 		<db:oracle-connection host="localhost" port="1539" user="Elephant" password="welcome1" instance="orcl" />
 	</db:config>
+	<api-gateway:autodiscovery apiId="16656841" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="ace6fe87-3d87-4c21-9910-4b62b62239d2" flowRef="emp-onboard-sapi-main" />
 </mule>
